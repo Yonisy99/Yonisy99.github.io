@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人介绍与部署指南 | 2026版</title>
+    <meta name="description" content="专业个人展示网站及静态网站部署全指南">
+    
+    <!-- Font Awesome -->
+    <link href="https://cdn.staticfile.net/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9', // Sky blue
+                            600: '#0284c7',
+                            900: '#0c4a6e', // Deep space blue
+                        },
+                        accent: {
+                            light: '#f8fafc', // Cloud Dancer-ish
+                            dark: '#1e293b',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Styles */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+        
+        /* Dark mode overrides */
+        .dark body {
+            background-color: #0f172a;
+            color: #e2e8f0;
+        }
+
+        /* Bento Grid Layout */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(1, 1fr);
+            gap: 1.5rem;
+        }
+        @media (min-width: 768px) {
+            .bento-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (min-width: 1024px) {
+            .bento-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Toast Animation */
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        .toast {
+            animation: slideIn 0.3s ease-out forwards;
+        }
+        .toast.hiding {
+            animation: fadeOut 0.3s ease-in forwards;
+        }
+    </style>
+</head>
+<body class="antialiased transition-colors duration-300">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <div class="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center text-white font-bold">P</div>
+                    <span class="font-bold text-xl tracking-tight text-slate-800 dark:text-white">Portfolio<span class="text-brand-500">.Dev</span></span>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="text-slate-600 dark:text-slate-300 hover:text-brand-500 dark:hover:text-brand-400 font-medium transition">首页</a>
+                    <a href="#about" class="text-slate-600 dark:text-slate-300 hover:text-brand-500 dark:hover:text-brand-400 font-medium transition">关于我</a>
+                    <a href="#skills" class="text-slate-600 dark:text-slate-300 hover:text-brand-500 dark:hover:text-brand-400 font-medium transition">技能</a>
+                    <a href="#projects" class="text-slate-600 dark:text-slate-300 hover:text-brand-500 dark:hover:text-brand-400 font-medium transition">项目</a>
+                    <a href="#contact" class="text-slate-600 dark:text-slate-300 hover:text-brand-500 dark:hover:text-brand-400 font-medium transition">联系</a>
+                    <a href="#deployment-guide" class="px-3 py-1 rounded-full bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400 text-sm font-semibold border border-brand-200 dark:border-brand-800 hover:bg-brand-100 transition">
+                        部署指南
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-slate-600 dark:text-slate-300 hover:text-brand-500 focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Panel -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#home" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-800">首页</a>
+                <a href="#about" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-800">关于我</a>
+                <a href="#skills" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-800">技能</a>
+                <a href="#projects" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-800">项目</a>
+                <a href="#contact" class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-800">联系</a>
+                <a href="#deployment-guide" class="block px-3 py-2 rounded-md text-base font-medium text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-slate-800">部署指南</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Wrapper -->
+    <main class="pt-16">
+
+        <!-- PART 1: Personal Portfolio Website -->
+
+        <!-- Hero Section -->
+        <section id="home" class="relative min-h-[90vh] flex items-center justify-center bg-gradient-to-br from-white to-brand-50 dark:from-slate-900 dark:to-slate-800 overflow-hidden">
+            <div class="absolute inset-0 z-0 opacity-10 dark:opacity-5">
+                <div class="absolute top-10 left-10 w-72 h-72 bg-brand-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob"></div>
+                <div class="absolute top-10 right-10 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-2000"></div>
+                <div class="absolute -bottom-8 left-20 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl animate-blob animation-delay-4000"></div>
+            </div>
+
+            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col-reverse lg:flex-row items-center gap-12">
+                <div class="lg:w-1/2 text-center lg:text-left space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-100 dark:bg-brand-900/50 text-brand-600 dark:text-brand-300 text-sm font-medium">
+                        <span class="relative flex h-2 w-2">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
+                        </span>
+                        开放新机会
+                    </div>
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                        构建 <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-purple-600">数字化未来</span> 的前端工程师
+                    </h1>
+                    <p class="text-lg sm:text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto lg:mx-0">
+                        你好，我是 <span class="font-semibold text-slate-900 dark:text-white">Alex Chen</span>。专注于打造高性能、响应式且用户体验极佳的 Web 应用。热衷于 React 生态与 Serverless 架构。
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
+                        <a href="#projects" class="px-8 py-3 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-semibold shadow-lg shadow-brand-500/30 transition transform hover:-translate-y-1">
+                            查看作品
+                        </a>
+                        <a href="#contact" class="px-8 py-3 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 font-semibold transition">
+                            联系我
+                        </a>
+                    </div>
+                </div>
+                <div class="lg:w-1/2 flex justify-center">
+                    <div class="relative w-64 h-64 sm:w-80 sm:h-80">
+                        <div class="absolute inset-0 bg-gradient-to-tr from-brand-400 to-purple-500 rounded-full animate-spin-slow blur-md opacity-70"></div>
+                        <img src="https://agent.my.cn/mos/ca4673f7a6c84b1c9e83f86397f0eab3/f609f4fa8d87603845e7df77ac1707c5" alt="Professional Avatar" class="relative w-full h-full object-cover rounded-full border-4 border-white dark:border-slate-800 shadow-2xl">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Me Section -->
+        <section id="about" class="py-20 bg-white dark:bg-slate-900">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">关于我</h2>
+                    <p class="mt-4 text-lg text-slate-600 dark:text-slate-400">我的职业旅程与个人特质</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <!-- Bio -->
+                    <div class="space-y-6">
+                        <div class="prose dark:prose-invert max-w-none">
+                            <h3 class="text-2xl font-bold text-slate-800 dark:text-white">个人简介</h3>
+                            <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
+                                拥有5年前端开发经验的全栈工程师，擅长将复杂的设计转化为流畅的代码。我不仅关注代码质量，更注重产品的可访问性与性能优化。作为一名终身学习者，我紧跟 Web 技术前沿，致力于通过技术解决实际问题。
+                            </p>
+                            <h3 class="text-2xl font-bold text-slate-800 dark:text-white mt-6">职业定位</h3>
+                            <p class="text-slate-600 dark:text-slate-300">
+                                目标成为技术架构师，推动团队采用现代化的开发流程，构建可扩展的 Web 平台。
+                            </p>
+                        </div>
+                        
+                        <!-- Education -->
+                        <div class="bg-slate-50 dark:bg-slate-800 rounded-xl p-6 border border-slate-100 dark:border-slate-700">
+                            <h4 class="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                                <i class="fas fa-graduation-cap text-brand-500"></i> 教育背景
+                            </h4>
+                            <div class="space-y-4">
+                                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+                                    <div>
+                                        <p class="font-bold text-slate-800 dark:text-slate-200">计算机科学与技术 (学士)</p>
+                                        <p class="text-sm text-slate-500 dark:text-slate-400">科技大学</p>
+                                    </div>
+                                    <span class="text-sm font-medium text-brand-600 bg-brand-50 dark:bg-brand-900/30 px-2 py-1 rounded mt-2 sm:mt-0">2018 - 2022</span>
+                                </div>
+                                <div class="text-sm text-slate-600 dark:text-slate-400">
+                                    <p>• GPA: 3.8/4.0 (前 5%)</p>
+                                    <p>• 主修课程：数据结构、算法分析、Web工程、操作系统</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Experience -->
+                    <div class="space-y-6">
+                        <h3 class="text-2xl font-bold text-slate-800 dark:text-white">工作经历</h3>
+                        <div class="relative border-l-2 border-brand-200 dark:border-slate-700 ml-3 space-y-8">
+                            <!-- Job 1 -->
+                            <div class="relative pl-8">
+                                <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-brand-500 border-2 border-white dark:border-slate-900"></div>
+                                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-2">
+                                    <h4 class="text-lg font-bold text-slate-900 dark:text-white">高级前端工程师</h4>
+                                    <span class="text-sm text-slate-500 dark:text-slate-400">2023 - 至今</span>
+                                </div>
+                                <p class="text-brand-600 dark:text-brand-400 font-medium mb-2">TechFlow Inc.</p>
+                                <ul class="list-disc list-outside ml-4 text-slate-600 dark:text-slate-300 space-y-1 text-sm">
+                                    <li>主导公司核心 SaaS 平台重构，将页面加载速度提升 40%。</li>
+                                    <li>设计并落地内部组件库，统一了 5 个子产品的 UI 风格，开发效率提升 30%。</li>
+                                    <li>引入自动化测试流程，将关键路径的 Bug 率降低了 25%。</li>
+                                </ul>
+                            </div>
+                            <!-- Job 2 -->
+                            <div class="relative pl-8">
+                                <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-slate-300 dark:border-slate-900"></div>
+                                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-2">
+                                    <h4 class="text-lg font-bold text-slate-900 dark:text-white">前端开发工程师</h4>
+                                    <span class="text-sm text-slate-500 dark:text-slate-400">2022 - 2023</span>
+                                </div>
+                                <p class="text-brand-600 dark:text-brand-400 font-medium mb-2">Creative Studio</p>
+                                <ul class="list-disc list-outside ml-4 text-slate-600 dark:text-slate-300 space-y-1 text-sm">
+                                    <li>负责电商活动页面的开发，支持百万级并发访问。</li>
+                                    <li>与设计团队紧密合作，实现了高保真的动效交互。</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="py-20 bg-slate-50 dark:bg-slate-800/50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">技能矩阵</h2>
+                    <p class="mt-4 text-lg text-slate-600 dark:text-slate-400">技术栈与专业能力</p>
+                </div>
+
+                <div class="bento-grid">
+                    <!-- Tech Skills -->
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 lg:col-span-2">
+                        <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2">
+                            <i class="fas fa-code text-brand-500"></i> 技术技能
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                            <div>
+                                <h4 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">前端核心</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-3 py-1 bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300 rounded-full text-sm font-medium">React</span>
+                                    <span class="px-3 py-1 bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-300 rounded-full text-sm font-medium">Vue.js</span>
+                                    <span class="px-3 py-1 bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300 rounded-full text-sm font-medium">TypeScript</span>
+                                    <span class="px-3 py-1 bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-300 rounded-full text-sm font-medium">Tailwind CSS</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">后端与云</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-3 py-1 bg-yellow-50 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-300 rounded-full text-sm font-medium">Node.js</span>
+                                    <span class="px-3 py-1 bg-sky-50 text-sky-600 dark:bg-sky-900/30 dark:text-sky-300 rounded-full text-sm font-medium">AWS</span>
+                                    <span class="px-3 py-1 bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300 rounded-full text-sm font-medium">Docker</span>
+                                    <span class="px-3 py-1 bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-300 rounded-full text-sm font-medium">Kubernetes</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">数据库</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-3 py-1 bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-300 rounded-full text-sm font-medium">MongoDB</span>
+                                    <span class="px-3 py-1 bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300 rounded-full text-sm font-medium">MySQL</span>
+                                    <span class="px-3 py-1 bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-300 rounded-full text-sm font-medium">Redis</span>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-semibold text-slate-500 uppercase tracking-wider mb-3">工具链</h4>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="px-3 py-1 bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300 rounded-full text-sm font-medium">Git</span>
+                                    <span class="px-3 py-1 bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300 rounded-full text-sm font-medium">VS Code</span>
+                                    <span class="px-3 py-1 bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300 rounded-full text-sm font-medium">Jenkins</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Soft Skills -->
+                    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
+                        <h3 class="text-xl font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2">
+                            <i class="fas fa-users text-purple-500"></i> 软技能
+                        </h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium text-slate-700 dark:text-slate-300">沟通与协作</span>
+                                    <span class="text-sm font-medium text-slate-500">95%</span>
+                                </div>
+                                <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                                    <div class="bg-purple-500 h-2 rounded-full" style="width: 95%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium text-slate-700 dark:text-slate-300">问题解决</span>
+                                    <span class="text-sm font-medium text-slate-500">90%</span>
+                                </div>
+                                <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                                    <div class="bg-purple-500 h-2 rounded-full" style="width: 90%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium text-slate-700 dark:text-slate-300">英语 (商务)</span>
+                                    <span class="text-sm font-medium text-slate-500">85%</span>
+                                </div>
+                                <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                                    <div class="bg-purple-500 h-2 rounded-full" style="width: 85%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects" class="py-20 bg-white dark:bg-slate-900">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">项目经历</h2>
+                    <p class="mt-4 text-lg text-slate-600 dark:text-slate-400">精选案例展示</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Project Card 1 -->
+                    <article class="bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-lg border border-slate-100 dark:border-slate-700 hover:shadow-xl transition duration-300 flex flex-col">
+                        <div class="h-48 bg-gradient-to-r from-blue-400 to-indigo-500 flex items-center justify-center">
+                            <i class="fas fa-chart-line text-6xl text-white opacity-80"></i>
+                        </div>
+                        <div class="p-6 flex-1 flex flex-col">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-xl font-bold text-slate-900 dark:text-white">SaaS 数据分析平台</h3>
+                                <span class="text-xs text-slate-500 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">2025</span>
+                            </div>
+                            <p class="text-slate-600 dark:text-slate-300 text-sm mb-4 flex-1">
+                                为企业客户构建的实时数据可视化仪表盘。解决了海量数据渲染卡顿问题，支持多维度钻取分析。
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="text-xs font-medium text-blue-600 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded">React</span>
+                                <span class="text-xs font-medium text-green-600 bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded">Node.js</span>
+                                <span class="text-xs font-medium text-purple-600 bg-purple-50 dark:bg-purple-900/30 px-2 py-1 rounded">D3.js</span>
+                            </div>
+                            <div class="border-t border-slate-100 dark:border-slate-700 pt-4 mt-auto">
+                                <p class="text-xs text-slate-500"><i class="fas fa-check-circle text-green-500 mr-1"></i> 性能提升 40%</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Project Card 2 -->
+                    <article class="bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-lg border border-slate-100 dark:border-slate-700 hover:shadow-xl transition duration-300 flex flex-col">
+                        <div class="h-48 bg-gradient-to-r from-emerald-400 to-cyan-500 flex items-center justify-center">
+                            <i class="fas fa-shopping-cart text-6xl text-white opacity-80"></i>
+                        </div>
+                        <div class="p-6 flex-1 flex flex-col">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-xl font-bold text-slate-900 dark:text-white">NextGen 电商前台</h3>
+                                <span class="text-xs text-slate-500 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">2024</span>
+                            </div>
+                            <p class="text-slate-600 dark:text-slate-300 text-sm mb-4 flex-1">
+                                重构传统电商前台，采用 Headless 架构，实现了极致的秒开体验和个性化推荐功能。
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="text-xs font-medium text-green-600 bg-green-50 dark:bg-green-900/30 px-2 py-1 rounded">Vue 3</span>
+                                <span class="text-xs font-medium text-orange-600 bg-orange-50 dark:bg-orange-900/30 px-2 py-1 rounded">Redis</span>
+                                <span class="text-xs font-medium text-sky-600 bg-sky-50 dark:bg-sky-900/30 px-2 py-1 rounded">AWS Lambda</span>
+                            </div>
+                            <div class="border-t border-slate-100 dark:border-slate-700 pt-4 mt-auto">
+                                <p class="text-xs text-slate-500"><i class="fas fa-check-circle text-green-500 mr-1"></i> 转化率提升 15%</p>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Project Card 3 -->
+                    <article class="bg-white dark:bg-slate-800 rounded-xl overflow-hidden shadow-lg border border-slate-100 dark:border-slate-700 hover:shadow-xl transition duration-300 flex flex-col">
+                        <div class="h-48 bg-gradient-to-r from-orange-400 to-red-500 flex items-center justify-center">
+                            <i class="fas fa-robot text-6xl text-white opacity-80"></i>
+                        </div>
+                        <div class="p-6 flex-1 flex flex-col">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-xl font-bold text-slate-900 dark:text-white">AI 智能客服助手</h3>
+                                <span class="text-xs text-slate-500 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">2024</span>
+                            </div>
+                            <p class="text-slate-600 dark:text-slate-300 text-sm mb-4 flex-1">
+                                集成 LLM 的企业级客服系统，支持多轮对话、意图识别和工单自动创建。
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="text-xs font-medium text-blue-600 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded">TypeScript</span>
+                                <span class="text-xs font-medium text-indigo-600 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-1 rounded">OpenAI API</span>
+                                <span class="text-xs font-medium text-slate-600 bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded">WebSocket</span>
+                            </div>
+                            <div class="border-t border-slate-100 dark:border-slate-700 pt-4 mt-auto">
+                                <p class="text-xs text-slate-500"><i class="fas fa-check-circle text-green-500 mr-1"></i> 节省 60% 人力</p>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="py-20 bg-slate-50 dark:bg-slate-800/50">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">联系我</h2>
+                    <p class="mt-4 text-lg text-slate-600 dark:text-slate-400">期待与您的合作</p>
+                </div>
+
+                <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-8 border border-slate-100 dark:border-slate-700">
+                    <form id="contact-form" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">姓名 <span class="text-red-500">*</span></label>
+                                <input type="text" id="name" required class="w-full px-4 py-3 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition" placeholder="您的姓名">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">邮箱 <span class="text-red-500">*</span></label>
+                                <input type="email" id="email" required class="w-full px-4 py-3 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition" placeholder="example@email.com">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">需求描述</label>
+                            <textarea id="message" rows="4" class="w-full px-4 py-3 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:ring-2 focus:ring-brand-500 focus:border-transparent outline-none transition" placeholder="请简述您的需求..."></textarea>
+                        </div>
+                        <button type="submit" class="w-full py-3 px-6 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-bold text-lg shadow-lg shadow-brand-500/30 transition transform hover:-translate-y-1">
+                            发送消息
+                        </button>
+                    </form>
+
+                    <div class="mt-10 pt-8 border-t border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row justify-center gap-8">
+                        <a href="#" class="flex items-center gap-3 text-slate-600 dark:text-slate-400 hover:text-brand-500 transition">
+                            <i class="fab fa-github text-2xl"></i>
+                            <span>GitHub</span>
+                        </a>
+                        <a href="#" class="flex items-center gap-3 text-slate-600 dark:text-slate-400 hover:text-brand-500 transition">
+                            <i class="fab fa-linkedin text-2xl"></i>
+                            <span>LinkedIn</span>
+                        </a>
+                        <a href="#" class="flex items-center gap-3 text-slate-600 dark:text-slate-400 hover:text-brand-500 transition">
+                            <i class="fab fa-twitter text-2xl"></i>
+                            <span>Twitter</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PART 2: Deployment Guide Section -->
+        <section id="deployment-guide" class="py-20 bg-slate-900 text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <span class="text-brand-400 font-semibold tracking-wider uppercase text-sm">Documentation</span>
+                    <h2 class="text-3xl md:text-4xl font-bold mt-2">网站部署指南</h2>
+                    <p class="mt-4 text-slate-400 max-w-2xl mx-auto">本指南将详细介绍如何将此个人网站免费部署到 GitHub Pages、Netlify 或 Vercel，以及域名绑定和常见问题解决方案。</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                    <!-- Sidebar Navigation for Guide -->
+                    <div class="lg:col-span-1">
+                        <div class="sticky top-24 bg-slate-800 rounded-xl p-4 border border-slate-700">
+                            <h4 class="font-bold text-slate-200 mb-4 px-2">目录导航</h4>
+                            <nav class="space-y-1">
+                                <a href="#guide-intro" class="block px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-700 hover:text-white transition">部署准备</a>
+                                <a href="#guide-github" class="block px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-700 hover:text-white transition">GitHub Pages</a>
+                                <a href="#guide-netlify" class="block px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-700 hover:text-white transition">Netlify</a>
+                                <a href="#guide-vercel" class="block px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-700 hover:text-white transition">Vercel</a>
+                                <a href="#guide-comparison" class="block px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-700 hover:text-white transition">平台对比</a>
+                                <a href="#guide-domain" class="block px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-700 hover:text-white transition">域名与SSL</a>
+                                <a href="#guide-trends" class="block px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-700 hover:text-white transition">2026趋势</a>
+                                <a href="#guide-faq" class="block px-3 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-700 hover:text-white transition">常见问题</a>
+                            </nav>
+                        </div>
+                    </div>
+
+                    <!-- Guide Content -->
+                    <div class="lg:col-span-3 space-y-12">
+                        
+                        <!-- Intro -->
+                        <div id="guide-intro" class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                            <h3 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                                <i class="fas fa-rocket text-brand-500"></i> 部署准备
+                            </h3>
+                            <p class="text-slate-300 mb-4">在开始之前，请确保您已经准备好以下内容：</p>
+                            <ul class="list-disc list-outside ml-5 space-y-2 text-slate-300">
+                                <li>本 HTML 文件（命名为 <code class="bg-slate-900 px-1 py-0.5 rounded text-brand-300">index.html</code>）。</li>
+                                <li>一个 Git 仓库（GitHub, GitLab 或 Bitbucket）。</li>
+                                <li>（可选）一个自定义域名。</li>
+                            </ul>
+                        </div>
+
+                        <!-- GitHub Pages -->
+                        <div id="guide-github" class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                            <h3 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                                <i class="fab fa-github text-white"></i> GitHub Pages 部署
+                            </h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <h4 class="text-lg font-semibold text-brand-400 mb-2">1. 创建仓库</h4>
+                                    <p class="text-slate-300 text-sm">在 GitHub 上创建一个新仓库。为了获得用户主页，仓库名称必须为 <code class="bg-slate-900 px-1 py-0.5 rounded text-brand-300">用户名.github.io</code>。</p>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-semibold text-brand-400 mb-2">2. 上传文件</h4>
+                                    <p class="text-slate-300 text-sm">将您的 <code class="bg-slate-900 px-1 py-0.5 rounded text-brand-300">index.html</code> 文件上传至仓库根目录。</p>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-semibold text-brand-400 mb-2">3. 启用 Pages</h4>
+                                    <p class="text-slate-300 text-sm">进入仓库 <strong>Settings</strong> → <strong>Pages</strong>。在 "Build and deployment" 下，选择 Source 为 <strong>Deploy from a branch</strong>，并选择 <strong>main</strong> 分支和 <strong>/ (root)</strong> 目录，点击 Save。</p>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-semibold text-brand-400 mb-2">4. 访问网站</h4>
+                                    <p class="text-slate-300 text-sm">等待约 1-2 分钟，访问 <code class="bg-slate-900 px-1 py-0.5 rounded text-brand-300">https://用户名.github.io</code> 即可查看。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Netlify -->
+                        <div id="guide-netlify" class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                            <h3 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                                <i class="fas fa-cube text-teal-400"></i> Netlify 部署
+                            </h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <h4 class="text-lg font-semibold text-teal-400 mb-2">1. 注册与准备</h4>
+                                    <p class="text-slate-300 text-sm">访问 Netlify.com 并使用 GitHub 账号注册登录。确保代码已推送到 GitHub。</p>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-semibold text-teal-400 mb-2">2. 导入项目</h4>
+                                    <p class="text-slate-300 text-sm">点击控制台上的 <strong>Add new site</strong> → <strong>Import an existing project</strong>。选择 GitHub 并授权，然后选择您的仓库。</p>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-semibold text-teal-400 mb-2">3. 构建设置</h4>
+                                    <p class="text-slate-300 text-sm">对于纯静态 HTML，保持默认设置即可（Build command 留空，Publish directory 为 <code class="bg-slate-900 px-1 py-0.5 rounded text-teal-300">/</code>）。点击 <strong>Deploy site</strong>。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Vercel -->
+                        <div id="guide-vercel" class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                            <h3 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+                                <i class="fas fa-triangle text-black bg-white rounded-sm p-0.5"></i> Vercel 部署
+                            </h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <h4 class="text-lg font-semibold text-white mb-2">1. 导入项目</h4>
+                                    <p class="text-slate-300 text-sm">登录 Vercel，点击 <strong>Add New</strong> → <strong>Project</strong>。选择您的 Git 仓库并点击 <strong>Import</strong>。</p>
+                                </div>
+                                <div>
+                                    <h4 class="text-lg font-semibold text-white mb-2">2. 配置与部署</h4>
+                                    <p class="text-slate-300 text-sm">Vercel 会自动检测框架。对于静态站点，无需修改配置，直接点击 <strong>Deploy</strong> 按钮。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Comparison -->
+                        <div id="guide-comparison" class="bg-slate-800 rounded-xl p-8 border border-slate-700 overflow-x-auto">
+                            <h3 class="text-2xl font-bold text-white mb-6">三大平台免费托管对比</h3>
+                            <table class="w-full text-left text-sm text-slate-300">
+                                <thead class="bg-slate-900 text-slate-200 uppercase">
+                                    <tr>
+                                        <th class="px-4 py-3 rounded-tl-lg">特性</th>
+                                        <th class="px-4 py-3">GitHub Pages</th>
+                                        <th class="px-4 py-3">Netlify</th>
+                                        <th class="px-4 py-3 rounded-tr-lg">Vercel</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-700">
+                                    <tr>
+                                        <td class="px-4 py-3 font-medium">免费额度</td>
+                                        <td class="px-4 py-3">不限流量</td>
+                                        <td class="px-4 py-3">100GB 带宽/月</td>
+                                        <td class="px-4 py-3">100小时构建/月</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-3 font-medium">自定义域名</td>
+                                        <td class="px-4 py-3">支持</td>
+                                        <td class="px-4 py-3">支持</td>
+                                        <td class="px-4 py-3">支持 (1个)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-3 font-medium">SSL 证书</td>
+                                        <td class="px-4 py-3">Let's Encrypt (自动)</td>
+                                        <td class="px-4 py-3">Let's Encrypt (自动)</td>
+                                        <td class="px-4 py-3">Let's Encrypt (自动)</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-4 py-3 font-medium rounded-bl-lg">CDN 加速</td>
+                                        <td class="px-4 py-3">全球 CDN (国内较慢)</td>
+                                        <td class="px-4 py-3">全球边缘 CDN</td>
+                                        <td class="px-4 py-3 rounded-br-lg">全球 200+ 节点</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Domain & SSL -->
+                        <div id="guide-domain" class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                            <h3 class="text-2xl font-bold text-white mb-4">域名绑定与 SSL 配置</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <!-- GitHub DNS -->
+                                <div class="bg-slate-900 p-4 rounded-lg">
+                                    <h4 class="font-bold text-white mb-2">GitHub Pages DNS</h4>
+                                    <p class="text-xs text-slate-400 mb-2">根域名 A 记录:</p>
+                                    <code class="block text-xs text-brand-300 break-all mb-2">185.199.108.153<br>185.199.109.153<br>185.199.110.153<br>185.199.111.153</code>
+                                    <p class="text-xs text-slate-400 mb-1">www 子域 CNAME:</p>
+                                    <code class="block text-xs text-brand-300">用户名.github.io</code>
+                                </div>
+                                <!-- Netlify DNS -->
+                                <div class="bg-slate-900 p-4 rounded-lg">
+                                    <h4 class="font-bold text-white mb-2">Netlify DNS</h4>
+                                    <p class="text-xs text-slate-400 mb-2">根域名 A 记录:</p>
+                                    <code class="block text-xs text-brand-300 mb-2">75.2.60.5</code>
+                                    <p class="text-xs text-slate-400 mb-1">子域 CNAME:</p>
+                                    <code class="block text-xs text-brand-300">your-site.netlify.app</code>
+                                </div>
+                                <!-- Vercel DNS -->
+                                <div class="bg-slate-900 p-4 rounded-lg">
+                                    <h4 class="font-bold text-white mb-2">Vercel DNS</h4>
+                                    <p class="text-xs text-slate-400 mb-2">根域名 A 记录:</p>
+                                    <code class="block text-xs text-brand-300 mb-2">76.76.21.21</code>
+                                    <p class="text-xs text-slate-400 mb-1">子域 CNAME:</p>
+                                    <code class="block text-xs text-brand-300">cname.vercel-dns.com</code>
+                                </div>
+                            </div>
+                            <div class="mt-6 p-4 bg-brand-900/30 border border-brand-700 rounded-lg">
+                                <p class="text-sm text-brand-200"><i class="fas fa-info-circle mr-2"></i><strong>SSL 说明：</strong> 三大平台均使用 Let's Encrypt。在 DNS 配置正确并保存后，平台会自动申请证书。请确保在平台设置中开启了 "Force HTTPS" 或 "Enforce HTTPS"。</p>
+                            </div>
+                        </div>
+
+                        <!-- 2026 Trends -->
+                        <div id="guide-trends" class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                            <h3 class="text-2xl font-bold text-white mb-4">2026 部署工具与趋势</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-slate-900 p-4 rounded-lg border-l-4 border-purple-500">
+                                    <h4 class="font-bold text-purple-400 mb-1">AI 原生建站</h4>
+                                    <p class="text-sm text-slate-300">工具如 Meoo (秒悟) 和 Codex APP 允许通过自然语言描述直接生成并部署全栈网站，无需编写代码。</p>
+                                </div>
+                                <div class="bg-slate-900 p-4 rounded-lg border-l-4 border-blue-500">
+                                    <h4 class="font-bold text-blue-400 mb-1">边缘计算融合</h4>
+                                    <p class="text-sm text-slate-300">Vercel 和 Cloudflare 正在推动全栈应用向边缘节点迁移，实现真正的全球低延迟。</p>
+                                </div>
+                                <div class="bg-slate-900 p-4 rounded-lg border-l-4 border-green-500">
+                                    <h4 class="font-bold text-green-400 mb-1">零代码部署</h4>
+                                    <p class="text-sm text-slate-300">Cloudflare Drop 等工具支持拖拽文件夹即时生成预览链接，极大简化了测试流程。</p>
+                                </div>
+                                <div class="bg-slate-900 p-4 rounded-lg border-l-4 border-orange-500">
+                                    <h4 class="font-bold text-orange-400 mb-1">去中心化部署</h4>
+                                    <p class="text-sm text-slate-300">基于 IPFS 和 P2P 网络的部署方式（如 Madeit）开始兴起，提供抗审查的永久存储。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQ -->
+                        <div id="guide-faq" class="bg-slate-800 rounded-xl p-8 border border-slate-700">
+                            <h3 class="text-2xl font-bold text-white mb-6">常见问题及解决方案</h3>
+                            <div class="space-y-4">
+                                <details class="group bg-slate-900 rounded-lg open:ring-1 open:ring-brand-500">
+                                    <summary class="flex justify-between items-center font-medium cursor-pointer list-none p-4 text-slate-200">
+                                        <span>部署后出现 404 错误？</span>
+                                        <span class="transition group-open:rotate-180">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </span>
+                                    </summary>
+                                    <div class="text-slate-400 text-sm px-4 pb-4">
+                                        <p class="mb-2">可能原因及解决：</p>
+                                        <ul class="list-disc list-outside ml-4 space-y-1">
+                                            <li>文件名大小写不匹配（Linux 服务器区分大小写）。</li>
+                                            <li>缺少 <code class="bg-slate-800 px-1 rounded">index.html</code> 文件。</li>
+                                            <li>如果是 SPA，需配置服务器回退规则（如 Netlify 的 _redirects 文件）。</li>
+                                        </ul>
+                                    </div>
+                                </details>
+                                <details class="group bg-slate-900 rounded-lg open:ring-1 open:ring-brand-500">
+                                    <summary class="flex justify-between items-center font-medium cursor-pointer list-none p-4 text-slate-200">
+                                        <span>CNAME 配置失败怎么办？</span>
+                                        <span class="transition group-open:rotate-180">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </span>
+                                    </summary>
+                                    <div class="text-slate-400 text-sm px-4 pb-4">
+                                        <ul class="list-disc list-outside ml-4 space-y-1">
+                                            <li>检查是否与 A 记录冲突（同一主机名不能同时存在 A 和 CNAME）。</li>
+                                            <li>根域名通常不支持 CNAME，需使用 ALIAS 记录或 301 跳转。</li>
+                                            <li>请确保 DNS 记录值完全复制自托管平台提供的地址。</li>
+                                        </ul>
+                                    </div>
+                                </details>
+                                <details class="group bg-slate-900 rounded-lg open:ring-1 open:ring-brand-500">
+                                    <summary class="flex justify-between items-center font-medium cursor-pointer list-none p-4 text-slate-200">
+                                        <span>HTTPS 重定向循环？</span>
+                                        <span class="transition group-open:rotate-180">
+                                            <i class="fas fa-chevron-down"></i>
+                                        </span>
+                                    </summary>
+                                    <div class="text-slate-400 text-sm px-4 pb-4">
+                                        <p>通常由源站配置错误引起。如果在 CDN 后面，请检查源站是否强制 HTTPS 且端口配置正确。建议在 CDN 设置中开启 "Edge Certificates" 并关闭源站的强制跳转。</p>
+                                    </div>
+                                </details>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 text-slate-400 py-12 border-t border-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="text-center md:text-left">
+                <p class="font-bold text-white text-lg">Portfolio.Dev</p>
+                <p class="text-sm mt-1">© 2026 Alex Chen. All rights reserved.</p>
+            </div>
+            <div class="flex gap-6">
+                <a href="#" class="hover:text-white transition"><i class="fab fa-github text-xl"></i></a>
+                <a href="#" class="hover:text-white transition"><i class="fab fa-linkedin text-xl"></i></a>
+                <a href="#" class="hover:text-white transition"><i class="fab fa-twitter text-xl"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-3"></div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close mobile menu when clicking a link
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // Contact Form Handling with Toast
+        const contactForm = document.getElementById('contact-form');
+        
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            // Styles based on type
+            const bgClass = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+
+            toast.className = `toast flex items-center gap-3 px-6 py-4 rounded-lg shadow-lg text-white ${bgClass}`;
+            toast.innerHTML = `
+                <i class="fas ${icon}"></i>
+                <span class="font-medium">${message}</span>
+            `;
+
+            container.appendChild(toast);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                toast.classList.add('hiding');
+                toast.addEventListener('animationend', () => {
+                    toast.remove();
+                });
+            }, 3000);
+        }
+
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Basic Validation
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+
+            if(name && email) {
+                // Simulate form submission
+                const btn = contactForm.querySelector('button');
+                const originalText = btn.innerText;
+                btn.innerText = '发送中...';
+                btn.disabled = true;
+
+                setTimeout(() => {
+                    showToast('消息已发送！我会尽快回复您。');
+                    contactForm.reset();
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                }, 1500);
+            } else {
+                showToast('请填写所有必填字段。', 'error');
+            }
+        });
+
+        // Smooth Scroll for Anchor Links (Polyfill-like behavior for older browsers)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    const headerOffset = 80;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: "smooth"
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
